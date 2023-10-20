@@ -18,6 +18,7 @@ function parseEnvList(env) {
 
 // Set up rate-limiting to avoid abuse of the public CORS Anywhere server.
 var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELIMIT);
+var allowedOrigins = ['https://rewardtasks.com', 'https://admin.berrygoodmedia.org'];
 
 var cors_proxy = require('./lib/cors-anywhere');
 cors_proxy.createServer({
@@ -25,10 +26,15 @@ cors_proxy.createServer({
   originWhitelist: originWhitelist,
   requireHeader: ['origin', 'x-requested-with'],
   checkRateLimit: checkRateLimit,
-  setHeaders: {
-    'access-control-allow-credentials': 'true',
-    'access-control-allow-origin': '*',  // If you know the origin(s), replace '*' with your origin(s)
+  setHeaders: function(req, origin, requestedHeaders) {
+    var headers = {};
+    if (allowedOrigins.indexOf(origin) !== -1) {
+        headers['access-control-allow-origin'] = origin;
+        headers['access-control-allow-credentials'] = 'true';
+    }
+    return headers;
 },
+
   removeHeaders: [
   
     // Strip Heroku-specific headers
