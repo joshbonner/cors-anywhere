@@ -25,6 +25,10 @@ cors_proxy.createServer({
   originWhitelist: originWhitelist,
   requireHeader: ['origin', 'x-requested-with'],
   checkRateLimit: checkRateLimit,
+  setHeaders: {
+    'access-control-allow-credentials': 'true',
+    'access-control-allow-origin': '*',  // If you know the origin(s), replace '*' with your origin(s)
+},
   removeHeaders: [
   
     // Strip Heroku-specific headers
